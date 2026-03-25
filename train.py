@@ -11,7 +11,7 @@ import itertools
 import json
 from seqeval.metrics import f1_score, classification_report
 
-mode = "trans"
+mode = "trans" # options: ['trans'.'lstm','bert']
 def train(config,store=False):
     lr = config['lr']
     hd = config.get("hidden_dim",768)
