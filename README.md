@@ -24,4 +24,4 @@ mode = "lstm"  # Options: "lstm", "trans", "bert"
 
 
 # NER Project Report
-View the full experimental report here: [📄 Download/View PDF Report](./report.pdf)
+View the full experimental report here: [📄 Download/View PDF Report](./3036128157.pdf)
