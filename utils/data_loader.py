@@ -5,26 +5,31 @@ import json
 from collections import Counter
 
 class NERDataset(Dataset):
-    def __init__(self,label_source,data_source,mode,word2idx=None):
+    def __init__(self,label_source,data_sources,mode,word2idx=None,min_freq = 2):
         self.mode = mode
         #load labels and sentences with tags
         with open(label_source, 'r', encoding='utf-8') as f:
             label_data = json.load(f)
         self.t2i = label_data
+        self.i2t = {int(value): key for key, value in self.t2i.items()}
         self.sentences = []
-        with open(data_source,'r',encoding='utf-8') as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    item = json.loads(line) 
-                    self.sentences.append(item)
+        for data_source in data_sources:
+            with open(data_source,'r',encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        item = json.loads(line) 
+                        self.sentences.append(item)
         #padding and make embeddings
         if word2idx == None:
             word_count = Counter()
             for sentence in self.sentences:
                 for token in sentence["tokens"]:
                     word_count[token] += 1
-            self.word2idx = word_count.most_common()
+            self.word2idx = [
+                (word, count) for word, count in word_count.most_common() 
+                if count >= min_freq
+            ]
         else:
             self.word2idx = word2idx
         self.token2idx = {"<pad>":0, "<UNK>":1}
@@ -43,7 +48,7 @@ class NERDataset(Dataset):
         tokens = item['tokens']
         idxs = [self.token2idx.get(token, 1) for token in tokens]
         tags = item['tags']
-        return torch.tensor(idxs, dtype=torch.long), torch.tensor(tags, dtype=torch.long)
+        return torch.tensor(idxs, dtype=torch.long), torch.tensor(tags, dtype=torch.long),tokens
 
     def __check__(self):
         print(f"the NERDataset is in mode: {self.mode}")
@@ -51,31 +56,7 @@ class NERDataset(Dataset):
         print(f"the sentences are {self.sentences}")
 
 def collate(batch):
-    tokens,tags = zip(*batch)
+    tokens,tags,tokens_raw = zip(*batch)
     tokens_padded = pad_sequence(tokens,batch_first = True, padding_value=0)
     tags_padded = pad_sequence(tags,batch_first = True, padding_value= -100)
-    return tokens_padded, tags_padded
-
-
-
-#---------------------------testing--------------------------#
-
-'''
-label_url = "./ontonotes5/dataset/label.json"
-sentences_url = "./ontonotes5/dataset/train00.json"
-my_dataset = NERDataset(label_url,sentences_url,"lstm")
-
-train_loader = DataLoader(
-    my_dataset,
-    batch_size = 4,
-    shuffle = True,
-    collate_fn = collate
-)
-
-for batch_tokens, batch_tags in train_loader:
-    print(f"Batch Tokens Shape: {batch_tokens.shape}") # 应该是 [4, 当前 batch 最长长度]
-    print(f"Batch Tags Shape: {batch_tags.shape}")
-    print("First sentence padded indices:", batch_tokens[0])
-    break
-
-'''
+    return tokens_padded, tags_padded,tokens_raw

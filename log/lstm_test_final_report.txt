@@ -1,0 +1,40 @@
+Evaluation on Test Set
+==============================
+Overall Micro-F1: 0.7835
+
+Detailed Entity-level Report:
+              precision    recall  f1-score   support
+
+    CARDINAL       0.68      0.82      0.75       935
+        DATE       0.74      0.84      0.79      1602
+       EVENT       0.33      0.38      0.36        63
+         FAC       0.49      0.49      0.49       135
+         GPE       0.90      0.89      0.90      2240
+    LANGUAGE       0.71      0.45      0.56        22
+         LAW       0.54      0.53      0.53        40
+         LOC       0.48      0.69      0.57       179
+       MONEY       0.77      0.83      0.80       314
+        NORP       0.83      0.86      0.84       841
+     ORDINAL       0.78      0.92      0.84       195
+         ORG       0.73      0.73      0.73      1795
+     PERCENT       0.88      0.88      0.88       349
+      PERSON       0.82      0.82      0.82      1988
+     PRODUCT       0.36      0.47      0.41        76
+    QUANTITY       0.60      0.69      0.64       105
+        TIME       0.48      0.65      0.55       212
+ WORK_OF_ART       0.33      0.37      0.35       166
+
+   micro avg       0.76      0.81      0.78     11257
+   macro avg       0.64      0.68      0.66     11257
+weighted avg       0.77      0.81      0.79     11257
+{
+    "batch_size": 64,
+    "dropout": 0.3,
+    "emb_dim": 512,
+    "epoch": 20,
+    "hidden_dim": 512,
+    "lr": 0.002,
+    "name": "lstm",
+    "testing_epoch": 5,
+    "weight_0": 0.3
+}
