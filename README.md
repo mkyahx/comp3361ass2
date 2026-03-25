@@ -14,7 +14,8 @@ This repository implements and evaluates multiple neural architectures to solve 
 ---
 
 ## 🚀 Getting Started
-
+# NER Project Report
+View the full experimental report here: [📄 Download/View PDF Report](./3036128157.pdf)
 ### 1. Model Configuration
 Before running the pipeline, specify the architecture you wish to train by modifying the `mode` variable in `train.py`:
 
@@ -23,5 +24,4 @@ Before running the pipeline, specify the architecture you wish to train by modif
 mode = "lstm"  # Options: "lstm", "trans", "bert"
 
 
-# NER Project Report
-View the full experimental report here: [📄 Download/View PDF Report](./3036128157.pdf)
+
