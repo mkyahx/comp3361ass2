@@ -1,0 +1,167 @@
+REPORT 
+Shenru Zhang 3036128157
+1.Description of Taggers
+I implement three different Taggers to solve the NER problem.
+1.1 BiLSTM Taggers
+In NER task, single directional LSTM is weak on recognize the relationship of the pair words, so I introduce BiLSTM model.
+1.1.1 Architecture
+input sequence → Embedding → Dropout → BiLSTM → Dropout → linear layer → tag
+   [B, L]        [B, L, E]  [B, L, E] [B, L, H][B, L, H]   [B, L, T]
+
+Embedding layer converts the tokens into vectors. Dropout layer is used to avoid overfitting. BiLSTM layer grab memory from context. Linear layer project the hidden state into tag space.
+
+
+1.1.2 Hyperparameters
+{
+    "batch_size": 64,
+    "dropout": 0.3,
+    "emb_dim": 512,
+    "epoch": 20,
+    "hidden_dim": 512,
+    "lr": 0.002,
+    "name": "lstm",
+    "testing_epoch": 5,
+    "weight_0": 0.3
+}
+* The descriptions of some of the hyperparameters will be introduced in session 2.
+
+1.2 Transformer Tagger
+1.2.1 Architecture
+
+input tokens → Embedding → Positional Encoding → Transformer Encoder → Linear layer → tag
+   [B, L]      [B, L, D]      [B, L, D]              [B, L, D]            [B, L, T]
+
+Embedding layer converts the tokens into vectors. PositionalEncoding layer inject positional information by sin and cos encoding. TansformerEncoder subtracts features by self-attention mechanism. Linear layer project the protraits in to tag.
+
+1.2.2 Hyperparameters
+{
+    "batch_size": 32,
+    "dropout": 0.1,
+    "emb_dim": 512,
+    "epoch": 60,
+    "hidden_dim": 1024,
+    "label_smoothing": 0.1,
+    "lr": 0.0002,
+    "n_head": 8,
+    "name": "trans",
+    "num_layers": 4,
+    "testing_epoch": 5,
+    "weight_0": 0.5,
+    "weight_decay": 0.0001
+}
+
+1.3 DistilBERT Tagger
+1.3.1 Architecture
+input sequence → Tokenizer → DistilBERT → Dropout → linear layer → tag
+                  WordPiece    [B,L,768]   [B,L,768]   [B,L,T]
+Tokenizer is the DistilBertTokenizerFast, used to align original labels. DistilBERT model is with pre-trained parameters, a transformer encoder with 6 layers. Dropout layers adjust regularization. Linear layer project the output into tag space.
+
+1.3.2 Hyperparameters
+{
+    "batch_size": 32,
+    "dropout": 0.1,
+    "epoch": 5,
+    "lr": 5e-05,
+    "name": "bert",
+    "testing_epoch": 3,
+    "weight_0": 1,
+    "weight_decay": 0.01
+}
+
+2.Experimental Settings and Hyperparameters
+2.1 training
+2.1.1 optimization
+AdamW and Adam optimizers are introduced to accelerate the first several epoch of training
+2.1.2 Reducing learning rate
+Introduced ReduceLROnPlateau to avoid the model go too fast in the later stage, which is conductive to fine-tuning
+2.1.3 Masking
+I used -100 on ignored labels to ensure the loss is only calculated on valid tokens
+2.1.4 weight of zero
+Since the number of tag 0 is significantly more than others, I deduce the weight for predicting tag 0 to avoid model predict every tag to 0.
+
+2.2 Hyperparameter tuning
+I used Grid Search to find the best configuration. testing epoch is the number of epoch I used on grid search since often the first several rounds will the optimal configuration stand out.
+
+lstm_grid={
+    "lr": [0.001,0.002],#[0.001,0.002]
+    "hidden_dim" : [512,1024],#[512,1024]
+    'dropout': [0.3,0.5],#[0.3,0.5]
+    "weight_0" : [0.1,0.3],#[0.1,0.3]
+    "batch_size" : [64],
+    "emb_dim" : [512],
+    "epoch" : [20],
+    "testing_epoch" : [5],
+    "name" : ["lstm"]
+}
+
+trans_grid = {
+    'lr': [1e-4,2e-4],  #[1e-4,2e-4]        
+    'hidden_dim': [1024,2048],      
+    'dropout': [0.1],      
+    'weight_0': [0.4,0.5], #0.4,0.5
+    'batch_size': [32],    
+    'emb_dim': [512],
+    "n_head" : [8],
+    "num_layers": [4,6], #[4,6]
+    "epoch" : [60], #60
+    "testing_epoch": [5], #5
+    "name" : ["trans"],
+    "weight_decay":[1e-4],
+    "label_smoothing" : [0.1]
+}
+
+bert_grid={
+    'lr':[2e-5,3e-5,5e-5],
+    'weight_decay':[0.01],
+    "dropout":[0.1],
+    'name':['bert'],
+    'testing_epoch':[3],
+    'epoch':[5],
+    'weight_0':[1],
+    'batch_size':[32]
+}
+
+2.3 Performance on Dev set
+In terms of Micro F1, I run all the 3 models and the optimal score is as follow:
+BiLSTM: 0.7835
+Transformer: 0.7206
+DistilBert: 0.7682
+
+3.Comparision Tables
+
+Model      | Micro F1 | Precision | Recall |  LR  |
+-----------+----------+-----------+--------+------+
+BiLSTM     |  0.78    |   0.76    |  0.81  | 2e-3 |
+-----------+----------+-----------+--------+------+
+Transformer|  0.72    |   0.70    |  0.75  | 2e-4 |
+-----------+----------+-----------+--------+------+
+DistilBert |  0.77    |   0.78    |  0.76  | 5e-5 |
+-----------+----------+-----------+--------+------+
+
+4. Analysis and Discussion
+
+4.1 Comparision among models
+4.1.1 BiLSTM
+BiLSTM model shows the power of sequence model and result in the best F1 score. This finding suggest that sequence model is efficient at capturing local patterns. The high recall indicates that the model is good at finding entities.
+4.1.2 Transformer
+Transformer architecture is lagged behind in all the three indicators. This may lead to the conclusion that a self-attention structure without pre-trained parameters is struggling with finding the optimal solution when the training data is relatively small.
+4.1.3 DistilBert
+DistilBert model gives the highest precision. It is more cautious and accurate when it did predict an entity. The lower F1 score may be attributed to the subword tokenization process.
+
+4.2 Comparision among entities
+By observing the score obtained on each entity tag, we can reveal the strength and weakness of the models.
+
+4.2.1 Performance of entities
+GPE, PERCENT, and NORP are performed well in all the models, While EVENT and WORK_OF_ART showed the lowest scores. That is to say the models excel at recognizing entity types that are structured, clearly defined, and have prominent contextual features, while they lack deep semantic reasoning and open-domain generalization capabilities.
+
+4.2.2 The advantages of each model
+I observed the certain tag that one model excel the others and thus conclude the advantages of each model
+
+4.2.2.1 BiLSTM: The Sequential Pattern Expert
+BiLSTM achieve the highest F1 and also the Recall on GPE, PERSON, Indicating that LSTM is extremely good at capturing local dependency and tagging patterns.
+
+4.2.2.2 DistilBert: Semantic Precision specialist
+DistilBert model has the highest precision on MONEY and EVENT within only 5 epoch. This fact shows that the pre-trained parameters imply the knowledge of deep contextual understanding.
+
+4.2.2.3 Transformer: Quantitative Changes Lead to Qualitative Changes
+Transformer wins on the Recall of LANGUAGE tag, a type that only appears 22 times in the training data. This indicates that after larger epoch number (60 for Transformer compare to 20 for LSTM and 5 for Bert), the model became specialist on searching certain words.

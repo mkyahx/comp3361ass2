@@ -291,7 +291,13 @@ def test(config):
     with torch.no_grad(): 
         test_f1, test_report, results = evaluate(model, test_loader, device, train_dataset.i2t, export=True)
     uid = 3036128157
-    result_path = f"{uid}.{mode}.test.txt"
+    if mode =="lstm":
+        mode_name = "lstm"
+    elif mode == "trans":
+        mode_name = "transformer"
+    elif mode =="bert":
+        mode_name = "distilbert"
+    result_path = f"{uid}.{mode_name}.test.txt"
     with open(result_path, "w", encoding="utf-8") as f:
         for idx, tags_list in enumerate(results):
             original_tokens = test_dataset.sentences[idx]['tokens']
