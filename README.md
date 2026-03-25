@@ -1,9 +1,23 @@
 # comp3361ass2
-use different neural architectures to solve the Named Entity Recognition (NER) problem
+# NER-Bench: Neural Architectures for Named Entity Recognition
 
-To run the training process:
+This repository implements and evaluates multiple neural architectures to solve the **Named Entity Recognition (NER)** task on the OntoNotes 5.0 dataset.
 
-1.modify the viriable 'mode' in  train.py
-2. python train.py
-or
-python -u train.py 2>&1 | tee -a log/train_{mode}.log
+## 🏗 Supported Architectures
+
+| Mode | Architecture | Key Features |
+| :--- | :--- | :--- |
+| `lstm` | **BiLSTM** | Bidirectional LSTM + Linear Layer + Optimized Class Weighting |
+| `trans` | **Transformer** | 4-layer Encoder + Sinusoidal Positional Encoding + Label Smoothing |
+| `bert` | **DistilBERT** | Pre-trained Transformer Fine-tuning with Subword Alignment |
+
+---
+
+## 🚀 Getting Started
+
+### 1. Model Configuration
+Before running the pipeline, specify the architecture you wish to train by modifying the `mode` variable in `train.py`:
+
+```python
+# train.py (Line ~20)
+mode = "lstm"  # Options: "lstm", "trans", "bert"
