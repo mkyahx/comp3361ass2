@@ -19,5 +19,5 @@ This repository implements and evaluates multiple neural architectures to solve 
 Before running the pipeline, specify the architecture you wish to train by modifying the `mode` variable in `train.py`:
 
 ```python
-# train.py (Line ~20)
+# train.py (Line ~14)
 mode = "lstm"  # Options: "lstm", "trans", "bert"
