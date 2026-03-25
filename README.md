@@ -21,3 +21,7 @@ Before running the pipeline, specify the architecture you wish to train by modif
 ```python
 # train.py (Line ~14)
 mode = "lstm"  # Options: "lstm", "trans", "bert"
+
+
+# NER Project Report
+View the full experimental report here: [📄 Download/View PDF Report](./report.pdf)
