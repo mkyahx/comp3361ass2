@@ -25,3 +25,20 @@ mode = "lstm"  # Options: "lstm", "trans", "bert"
 
 
 
+AI Usage Declaration
+
+Tool Used: Gemini
+
+Nature of Assistance:
+
+Conceptual Understanding: Clarified the mathematical principles of Sinusoidal Positional Encoding and its role in Transformer-based NER.
+
+Code Verification: Consulted for best practices in PyTorch implementation, specifically regarding register_buffer and embedding scaling.
+
+Data Synthesis: Assisted in structuring and refining the Experimental Report and Analysis based on the results obtained from my local grid search.
+
+Documentation: Provided suggestions for README formatting.
+
+
+
+

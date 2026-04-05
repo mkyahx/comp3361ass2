@@ -164,4 +164,4 @@ BiLSTM achieve the highest F1 and also the Recall on GPE, PERSON, Indicating tha
 DistilBert model has the highest precision on MONEY and EVENT within only 5 epoch. This fact shows that the pre-trained parameters imply the knowledge of deep contextual understanding.
 
 4.2.2.3 Transformer: Quantitative Changes Lead to Qualitative Changes
-Transformer wins DisyilBert on the Recall of LANGUAGE tag, a type that only appears 22 times in the training data. This indicates that after larger epoch number (60 for Transformer compare to 20 for LSTM and 5 for Bert), the model became specialist on searching certain words.
+Transformer wins DistilBert on the Recall of LANGUAGE tag, a type that only appears 22 times in the training data. This indicates that after larger epoch number (60 for Transformer compare to 20 for LSTM and 5 for Bert), the model became specialist on searching certain words.
