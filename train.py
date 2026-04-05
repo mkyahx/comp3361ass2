@@ -11,7 +11,7 @@ import itertools
 import json
 from seqeval.metrics import f1_score, classification_report
 
-mode = "trans" # options: ['trans'.'lstm','bert']
+mode = "bert" # options: ['trans'.'lstm','bert']
 def train(config,store=False):
     lr = config['lr']
     hd = config.get("hidden_dim",768)
@@ -299,13 +299,19 @@ def test(config):
         mode_name = "distilbert"
     result_path = f"{uid}.{mode_name}.test.txt"
     with open(result_path, "w", encoding="utf-8") as f:
-        for idx, tags_list in enumerate(results):
+        for idx, pred_tags_indices in enumerate(results):
+            # 获取对应的原始 tokens
             original_tokens = test_dataset.sentences[idx]['tokens']
-            entry = {
-                "tags": tags_list,
-                "tokens": original_tokens
-            }
-            f.write(json.dumps(entry) + "\n")
+            
+            # 遍历当前句子的每个 token
+            for i in range(len(original_tokens)):
+                token = original_tokens[i]
+                # 从索引转回字符串标签 (如 'B-PERSON')
+                tag = train_dataset.i2t[pred_tags_indices[i]]
+                f.write(f"{token} {tag}\n")
+            
+            # 句子之间添加一个空行
+            f.write("\n")
 
     print(f"{mode} predictions saved to: {result_path}")
 
@@ -366,7 +372,7 @@ def grid_search(param_grid):
 
 
 # train(trans_config,store=True)
-# test(trans_config)
+
 
 if mode == "lstm":
     grid=lstm_grid
@@ -377,3 +383,4 @@ elif mode=="bert":
 
 
 best_config=grid_search(grid)
+test(best_config)

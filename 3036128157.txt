@@ -124,8 +124,8 @@ bert_grid={
 2.3 Performance on Dev set
 In terms of Micro F1, I run all the 3 models and the optimal score is as follow:
 BiLSTM: 0.7835
-Transformer: 0.7206
-DistilBert: 0.7682
+Transformer: 0.6979
+DistilBert: 0.7691
 
 3.Comparision Tables
 
@@ -133,7 +133,7 @@ Model      | Micro F1 | Precision | Recall |  LR  |
 -----------+----------+-----------+--------+------+
 BiLSTM     |  0.78    |   0.76    |  0.81  | 2e-3 |
 -----------+----------+-----------+--------+------+
-Transformer|  0.72    |   0.70    |  0.75  | 2e-4 |
+Transformer|  0.70    |   0.67    |  0.73  | 2e-4 |
 -----------+----------+-----------+--------+------+
 DistilBert |  0.77    |   0.78    |  0.76  | 5e-5 |
 -----------+----------+-----------+--------+------+
@@ -164,4 +164,4 @@ BiLSTM achieve the highest F1 and also the Recall on GPE, PERSON, Indicating tha
 DistilBert model has the highest precision on MONEY and EVENT within only 5 epoch. This fact shows that the pre-trained parameters imply the knowledge of deep contextual understanding.
 
 4.2.2.3 Transformer: Quantitative Changes Lead to Qualitative Changes
-Transformer wins on the Recall of LANGUAGE tag, a type that only appears 22 times in the training data. This indicates that after larger epoch number (60 for Transformer compare to 20 for LSTM and 5 for Bert), the model became specialist on searching certain words.
+Transformer wins DisyilBert on the Recall of LANGUAGE tag, a type that only appears 22 times in the training data. This indicates that after larger epoch number (60 for Transformer compare to 20 for LSTM and 5 for Bert), the model became specialist on searching certain words.
